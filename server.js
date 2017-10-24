@@ -1,12 +1,19 @@
 //  OpenShift sample Node application
 var express = require('express'),
     app     = express(),
-    morgan  = require('morgan');
-    
+    morgan  = require('morgan'),
+    bodyParser = require('body-parser');
+
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
+
+//support parsing of application/json type post data
+app.use(bodyParser.json());
+
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -88,6 +95,29 @@ app.get('/pagecount', function (req, res) {
     res.send('{ pageCount: -1 }');
   }
 });
+
+app.post('/register', function (req, res){
+     console.log("inside regiser post");
+     res.setHeader('Content-Type', 'application/json');
+
+   //mimic a slow network connection
+   setTimeout(function(){
+
+       res.send(JSON.stringify({
+           firstName: req.body.firstName || null,
+           lastName: req.body.lastName || null
+       }));
+
+   }, 1000)
+
+   //debugging output for the terminal
+   console.log('you posted: First Name: ' + req.body.firstName + ', Last Name: ' + req.body.lastName);
+});
+//app.get('/register', function (req, res) {
+//  console.log ("inside register");
+//  res.send('{flag: "you are registered"}');
+//});
+
 
 // error handling
 app.use(function(err, req, res, next){
