@@ -3,6 +3,32 @@
 
 module.exports = class RegisterHandler {
 
+	 async handleRequest (reqType, db, req, res) {
+	  try{
+	      var handler;
+	      var response;
+	      switch (reqType) {
+	        case 'REGISTER':
+	        console.log ("user: I am here 111");
+	          var user = new User ({email: req.body.email,
+	                  firstName: req.body.firstName,
+	                  lastName: req.body.lastName,
+	                  passwordHash: req.body.passowrd,
+	                  passwordSalt: ''});
+	          console.log ("user: " + JSON.stringify(user));
+
+	          response = await this.postRegister(user, db);
+	          break;
+	        default:
+	  				throw new Error('Unknown request type specified!');
+	      }
+	    } catch (err) {
+	      console.log(err);
+	  }
+	  return res.status(200).json(response);
+	}
+
+
 	async postRegister(User, db){
 			var response;
 			if (db) {

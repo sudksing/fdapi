@@ -105,37 +105,16 @@ app.post('/register', function (req, res){
     if (!db) {
       initDb(function(err){});
     }
-    handleRequest('REGISTER', db, req, res);
+    var handler = new RegisterHandler();
+    var response = handler.handleRequest('REGISTER', db, req, res);
+    //res.send (response);
 });
 //app.get('/register', function (req, res) {
 //  console.log ("inside register");
 //  res.send('{flag: "you are registered"}');
 //});
 
-async function handleRequest (reqType, db, req, res) {
-  try{
-      var handler;
-      var response;
-      switch (reqType) {
-        case 'REGISTER':
-        console.log ("user: I am here 111");
-          var user = new User ({email: req.body.email,
-                  firstName: req.body.firstName,
-                  lastName: req.body.lastName,
-                  passwordHash: req.body.passowrd,
-                  passwordSalt: ''});
-          console.log ("user: " + JSON.stringify(user));
-          handler = new RegisterHandler();
-          response = await handler.postRegister(user, db);
-          break;
-        default:
-  				throw new Error('Unknown request type specified!');
-      }
-    } catch (err) {
-      console.log(err);
-  }
-  return res.status(200).json(response);
-}
+
 
 // error handling
 app.use(function(err, req, res, next){
