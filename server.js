@@ -2,7 +2,10 @@
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser')
+    User = require('./model/User'),
+    RegisterHandler = require('./handler/RegisterHandler');
+
 
 Object.assign=require('object-assign')
 
@@ -97,27 +100,42 @@ app.get('/pagecount', function (req, res) {
 });
 
 app.post('/register', function (req, res){
-     console.log("inside regiser post");
-     res.setHeader('Content-Type', 'application/json');
-
-   //mimic a slow network connection
-   setTimeout(function(){
-
-       res.send(JSON.stringify({
-           firstName: req.body.firstName || null,
-           lastName: req.body.lastName || null
-       }));
-
-   }, 1000)
-
-   //debugging output for the terminal
-   console.log('you posted: First Name: ' + req.body.firstName + ', Last Name: ' + req.body.lastName);
+    console.log("inside regiser post");
+    res.setHeader('Content-Type', 'application/json');
+    if (!db) {
+      initDb(function(err){});
+    }
+    handleRequest('REGISTER', db, req, res);
 });
 //app.get('/register', function (req, res) {
 //  console.log ("inside register");
 //  res.send('{flag: "you are registered"}');
 //});
 
+async function handleRequest (reqType, db, req, res) {
+  try{
+      var handler;
+      var response;
+      switch (reqType) {
+        case 'REGISTER':
+        console.log ("user: I am here 111");
+          var user = new User ({email: req.body.email,
+                  firstName: req.body.firstName,
+                  lastName: req.body.lastName,
+                  passwordHash: req.body.passowrd,
+                  passwordSalt: ''});
+          console.log ("user: " + JSON.stringify(user));
+          handler = new RegisterHandler();
+          response = await handler.postRegister(user, db);
+          break;
+        default:
+  				throw new Error('Unknown request type specified!');
+      }
+    } catch (err) {
+      console.log(err);
+  }
+  return res.status(200).json(response);
+}
 
 // error handling
 app.use(function(err, req, res, next){
