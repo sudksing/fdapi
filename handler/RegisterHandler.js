@@ -32,6 +32,7 @@ module.exports = class RegisterHandler {
 	postRegister(User, db){
 			var response;
 			if (db) {
+				console.log("Before saving the Users");
 		    db.collection('users').save(function(err, User ){
 		     console.log("User Added: " + JSON.stringify(User));
 		    });
