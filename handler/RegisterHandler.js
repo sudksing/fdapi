@@ -33,7 +33,13 @@ module.exports = class RegisterHandler {
 			var response;
 			if (db) {
 				console.log("Before saving the Users");
-		    db.collection('users').save(function(err, User ){
+		    var result = User.save(function(err, User ){
+					if (err) {
+						response = { message:
+								{ error: "Error while saving the user!"}
+							};
+						return response;
+					}					
 		     console.log("User Added: " + JSON.stringify(User));
 		    });
 		  } else {
