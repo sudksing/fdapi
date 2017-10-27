@@ -1,5 +1,8 @@
 "use strict"
 var User = require('../model/User');
+var Promise = require('bluebird');
+var xml2js = Promise.promisifyAll(require("xml2js"));
+var parseStringAsync = xml2js.parseStringAsync;
 
 module.exports = class RegisterHandler {
 
