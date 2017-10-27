@@ -48,10 +48,10 @@ var db = null,
 var initDb = function(callback) {
   if (mongoURL == null) return;
 
-  var mongodb = require('mongodb');
+  var mongodb = require('mongoose');
   if (mongodb == null) return;
 
-  mongodb.connect(mongoURL, function(err, conn) {
+  /**mongodb.connect(mongoURL, function(err, conn) {
     if (err) {
       callback(err);
       return;
@@ -63,7 +63,10 @@ var initDb = function(callback) {
     dbDetails.type = 'MongoDB';
 
     console.log('Connected to MongoDB at: %s', mongoURL);
-  });
+  });**/
+  mongodb.Promise  = require('bluebird');
+  mongodb.connect(mongoURL);
+
 };
 
 app.get('/', function (req, res) {
