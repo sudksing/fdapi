@@ -3,7 +3,7 @@
 
 module.exports = class RegisterHandler {
 
-	 async handleRequest (reqType, db, req, res) {
+	  handleRequest(reqType, db, req, res) {
 	  try{
 	      var handler;
 	      var response;
@@ -17,7 +17,7 @@ module.exports = class RegisterHandler {
 	                  passwordSalt: ''});
 	          console.log ("user: " + JSON.stringify(user));
 
-	          response = await this.postRegister(user, db);
+	          response = this.postRegister(user, db);
 	          break;
 	        default:
 	  				throw new Error('Unknown request type specified!');
@@ -29,7 +29,7 @@ module.exports = class RegisterHandler {
 	}
 
 
-	async postRegister(User, db){
+	postRegister(User, db){
 			var response;
 			if (db) {
 		    db.collection('users').save(function(err, User ){
