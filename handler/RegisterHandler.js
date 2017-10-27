@@ -1,5 +1,5 @@
 "use strict"
-//var User = require('./model/User');
+var User = require('../model/User');
 
 module.exports = class RegisterHandler {
 
@@ -29,18 +29,19 @@ module.exports = class RegisterHandler {
 	}
 
 
-	postRegister(User, db){
+	postRegister(user, db){
 			var response;
 			if (db) {
 				console.log("Before saving the Users");
-		    var result = User.save(function(err, User ){
+				var userData = new User({ firstName: user.firstName, lastName: user.lastName, email: user.email})
+		    var result = userData.save(function(err){
 					if (err) {
 						response = { message:
 								{ error: "Error while saving the user!"}
 							};
 						return response;
-					}					
-		     console.log("User Added: " + JSON.stringify(User));
+					}
+		     console.log("User Added: ");
 		    });
 		  } else {
 		    response = { message:
