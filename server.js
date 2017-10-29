@@ -42,30 +42,37 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
 
   }
 }
+//mongoURL = "mongodb://swaggernodemongo:swaggernodemongo@ds055855.mlab.com:55855/swaggernodemongo";
+//mongoURL - "mongodb://fdmdbuser:fdmdbpwd@mdb-feedbackdo.193b.starter-ca-central-1.openshiftapps.com:27017/fddb";
 var db = null,
     dbDetails = new Object();
 
 var initDb = function(callback) {
+  console.log("inside initDB");
   if (mongoURL == null) return;
-
+  console.log("mongoURL: "+ mongoURL);
   var mongodb = require('mongoose');
   if (mongodb == null) return;
+  //mongodb.Promise  = require('bluebird');
+  //mongodb.connect(mongoURL, function(err, conn) {
+    //if (err) {
+    //  callback(err);
+    //  return;
+    //}
 
-  /**mongodb.connect(mongoURL, function(err, conn) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    db = conn;
+    //db = conn;
+    db =  mongodb.connect(mongoURL,{
+			  useMongoClient: true,
+			  /* other options */
+			});
     dbDetails.databaseName = db.databaseName;
     dbDetails.url = mongoURLLabel;
     dbDetails.type = 'MongoDB';
 
     console.log('Connected to MongoDB at: %s', mongoURL);
-  });**/
-  mongodb.Promise  = require('bluebird');
-  mongodb.connect(mongoURL);
+  //});
+
+  //mongodb.connect(mongoURL);
 
 };
 
@@ -103,9 +110,10 @@ app.get('/pagecount', function (req, res) {
 });
 
 app.post('/register', function (req, res){
-    console.log("inside regiser post");
+    console.log("inside regiser post" + db);
     res.setHeader('Content-Type', 'application/json');
     if (!db) {
+      console.log("!db");
       initDb(function(err){});
     }
     var handler = new RegisterHandler();

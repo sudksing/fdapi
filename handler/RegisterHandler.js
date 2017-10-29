@@ -10,7 +10,7 @@ module.exports = class RegisterHandler {
 	      var response;
 	      switch (reqType) {
 	        case 'REGISTER':
-	        console.log ("user: I am here 111");
+	        console.log ("user: I am here 111" + db);
 	          var user = new User ({email: req.body.email,
 	                  firstName: req.body.firstName,
 	                  lastName: req.body.lastName,
