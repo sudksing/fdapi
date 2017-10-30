@@ -43,7 +43,8 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
   }
 }
 //mongoURL = "mongodb://swaggernodemongo:swaggernodemongo@ds055855.mlab.com:55855/swaggernodemongo";
-//mongoURL - "mongodb://fdmdbuser:fdmdbpwd@mdb-feedbackdo.193b.starter-ca-central-1.openshiftapps.com:27017/fddb";
+//mongoURL = "mongodb://fdmdbuser:fdmdbpwd@mdb-feedbackdo.193b.starter-ca-central-1.openshiftapps.com:27017/fddb";
+mongoURL = "mongodb://fdmdbuser:fdmdbpwd@ds241065.mlab.com:41065/fddb"
 var db = null,
     dbDetails = new Object();
 
@@ -53,7 +54,7 @@ var initDb = function(callback) {
   console.log("mongoURL: "+ mongoURL);
   var mongodb = require('mongoose');
   if (mongodb == null) return;
-  //mongodb.Promise  = require('bluebird');
+  mongodb.Promise  = require('bluebird');
   //mongodb.connect(mongoURL, function(err, conn) {
     //if (err) {
     //  callback(err);
