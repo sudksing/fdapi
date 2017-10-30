@@ -22,7 +22,7 @@ var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
-
+mongoURL = "mongodb://fdmdbuser:fdmdbpwd@ds241065.mlab.com:41065/fddb";
 if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
   var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase(),
       mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'],
@@ -42,9 +42,8 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
 
   }
 }
-//mongoURL = "mongodb://swaggernodemongo:swaggernodemongo@ds055855.mlab.com:55855/swaggernodemongo";
-//mongoURL = "mongodb://fdmdbuser:fdmdbpwd@mdb-feedbackdo.193b.starter-ca-central-1.openshiftapps.com:27017/fddb";
-mongoURL = "mongodb://fdmdbuser:fdmdbpwd@ds241065.mlab.com:41065/fddb"
+
+
 var db = null,
     dbDetails = new Object();
 
