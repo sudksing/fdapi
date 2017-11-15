@@ -4,7 +4,7 @@ var express = require('express'),
     morgan  = require('morgan'),
     bodyParser = require('body-parser')
     User = require('./model/User'),
-    RegisterHandler = require('./handler/RegisterHandler');
+    RegisterHandler = require('./handler/AuthHandler');
 
 
 Object.assign=require('object-assign')
@@ -109,7 +109,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-app.post('/register', function (req, res){
+ app.post('/register', function (req, res){
     console.log("inside regiser post" + db);
     res.setHeader('Content-Type', 'application/json');
     if (!db) {
@@ -117,14 +117,18 @@ app.post('/register', function (req, res){
       initDb(function(err){});
     }
     var handler = new RegisterHandler();
-    var response = handler.handleRequest('REGISTER', db, req, res);
-    //res.send (response);
+    handler.handleRequest('REGISTER', db, req, res);
 });
-//app.get('/register', function (req, res) {
-//  console.log ("inside register");
-//  res.send('{flag: "you are registered"}');
-//});
 
+app.post('/logon', function (req, res){
+   console.log("inside login post" + db);
+   res.setHeader('Content-Type', 'application/json');
+   if (!db) {
+     initDb(function(err){});
+   }
+   var handler = new RegisterHandler();
+   handler.handleRequest('LOGIN', db, req, res);
+});
 
 
 // error handling
