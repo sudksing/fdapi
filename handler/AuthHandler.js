@@ -38,7 +38,11 @@ module.exports = class AuthHandler {
 										response = resp;
 										console.log ("user logon isUserAuth: " + response);
 										return res.status(200).json(response);
-									});
+									}).catch(function(e) {
+										response = e;
+										console.log("e: " + JSON.stringify(e));
+										return res.status(500).json(response);
+									});;
 							break;
 	        default:
 	  				throw new Error('Unknown request type specified!');
@@ -95,19 +99,37 @@ module.exports = class AuthHandler {
 				var P = this.getUser(email)
 				.then (function(user){
 					return new Promise(function (resolve, reject){
-						console.log("\n gerUser response" + user);
+						console.log("\n Logon user: " + user);
+						if (user == null){
+							reject ({
+								result: "Error", message: "Userid/Password is wrong."
+							});
+						}
+						console.log("\n Logon: " + password + ' ' +user.password);
+						if (password == null || user.password == null) {
+							reject ({
+								result: "Error", message: "Userid/Password is wrong."
+							});
+						}
+
 						bcrypt.compare(password, user.password, function(err, res) {
 		 							if (err) {
 		 								console.log (err);
 										reject(err);
 		 							}
-		 							resolve({result:
-										{
-											userName: user.firstName,
-											id: user._id,
-											auth: res
+									if (res){
+				 							resolve({result:
+												{
+													userName: user.firstName,
+													id: user._id,
+													auth: res
+												}
+											});
+										} else {
+											reject ({
+												result: "Error", message: "Userid/Password is wrong."
+											});
 										}
-									});
 		 						});
 					})
 					.then(function (res){
