@@ -13,8 +13,7 @@ var UserSchema = new Schema({
     password: String
 });
 
-UserSchema.pre('save', function(next){
-  console.log("inside: UserSchema.pre");
+UserSchema.pre('save', function(next){  
     var user = this;
     if (!user.isModified('password')) return next();
 

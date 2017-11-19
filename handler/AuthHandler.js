@@ -1,9 +1,12 @@
 "use strict"
+var Messages = require('../model/Messages');
 var User = require('../model/User');
 var bcrypt = require('bcrypt');
 var Promise  = require('bluebird');
 var jwt = require('jsonwebtoken');
 var JWTUtils = require('../lib/JWTUtils');
+var _ = require('lodash');
+
 
 var SALT_WORK_FACTOR = 10;
 
@@ -42,7 +45,30 @@ module.exports = class AuthHandler {
 										response = e;
 										console.log("e: " + JSON.stringify(e));
 										return res.status(500).json(response);
-									});;
+									});
+							break;
+					case 'SEND_FEEDBACK':
+								var sendFeedbackPromise = this.sendFeedback(req);
+								sendFeedbackPromise.then(function(result){
+									response = result;
+									console.log ("Message Sent: " + JSON.stringify(response));
+									return res.status(200).json(response);
+								}).catch(function(e) {
+									response = e;
+									console.log("e: " + JSON.stringify(e));
+									return res.status(500).json(response);
+								});
+							break;
+					case 'SEE_FEEDBACK':
+								var seeFeedbackPromise = this.seeFeedback(req.body.email);
+								seeFeedbackPromise.then(function(result){
+									response = result;									
+									return res.status(200).json(response);
+								}).catch(function(e) {
+									response = e;
+									console.log("e: " + JSON.stringify(e));
+									return res.status(500).json(response);
+								});
 							break;
 	        default:
 	  				throw new Error('Unknown request type specified!');
@@ -52,6 +78,44 @@ module.exports = class AuthHandler {
 	  }
 	}
 
+	sendFeedback(req){
+		var result;
+		var msgData;
+		return new Promise(function (resolve, reject){
+			msgData = new Messages({
+				sEmail: req.body.sEmail,
+		    rEmail: req.body.rEmail,
+		    message: req.body.message,
+		    timestampSent: (new Date().getTime()),
+		    ipAddressSent: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+		    msgStatus: 'D',
+			});
+			result =  msgData.save(function(err, data){
+			 if (err) {
+				 var response = { result: false, error: "Error while saving the user!"};
+					 return reject (response);
+			 } else {
+				 return resolve(result)
+			 }
+		 });
+		});
+	}
+
+	seeFeedback(email) {
+		return new Promise(function (resolve, reject) {
+								var msgs = Messages.find({ rEmail: email }, function (err, data){
+								if (err){
+									reject(err);
+								} else {
+									if (_.isEmpty(data)) {
+										reject ({ result: "success", msg: "No message Found."});
+									} else {
+										resolve (data);
+									}
+								}
+							});
+						});
+					}
 
 	submitRegister(user){
 		var result;

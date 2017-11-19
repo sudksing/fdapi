@@ -4,7 +4,10 @@ var express = require('express'),
     morgan  = require('morgan'),
     bodyParser = require('body-parser')
     User = require('./model/User'),
-    RegisterHandler = require('./handler/AuthHandler');
+    FDHandler = require('./handler/AuthHandler'),
+    JWTUTils = require ("./lib/JWTUtils.js");
+
+    var apiRoutes = express.Router();
 
 
 Object.assign=require('object-assign')
@@ -76,6 +79,36 @@ var initDb = function(callback) {
 
 };
 
+
+apiRoutes.use(function(req, res, next) {
+  // console.log ('inside apiRoutes');
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  var token = req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
+    var jwt = new JWTUTils();
+    var P =   jwt.decoded(token);
+    P.then(function (re){
+      //console.log ("decoded &&&& " + JSON.stringify(re));
+      next();
+    }).catch(function(e) {
+      console.log (e);l
+      return  res.json({ success: false, message: 'Failed to authenticate token.' });
+    });
+  } else {
+    // if there is no token
+    // return an error
+    return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
+    });
+  }
+});
+
+app.use('/auth', apiRoutes);
+
 app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
@@ -116,7 +149,7 @@ app.get('/pagecount', function (req, res) {
       console.log("!db");
       initDb(function(err){});
     }
-    var handler = new RegisterHandler();
+    var handler = new FDHandler();
     handler.handleRequest('REGISTER', db, req, res);
 });
 
@@ -126,9 +159,31 @@ app.post('/logon', function (req, res){
    if (!db) {
      initDb(function(err){});
    }
-   var handler = new RegisterHandler();
+   var handler = new FDHandler();
    handler.handleRequest('LOGIN', db, req, res);
 });
+
+app.post('/auth/feedback', function (req, res){
+   console.log("inside feedback post" + db);
+   res.setHeader('Content-Type', 'application/json');
+   if (!db) {
+     console.log("!db");
+     initDb(function(err){});
+   }
+   var handler = new FDHandler();
+   handler.handleRequest('SEND_FEEDBACK', db, req, res);
+});
+
+app.post('/auth/seeFeedback', function (req, res){  
+   res.setHeader('Content-Type', 'application/json');
+   if (!db) {
+     console.log("!db");
+     initDb(function(err){});
+   }
+   var handler = new FDHandler();
+   handler.handleRequest('SEE_FEEDBACK', db, req, res);
+});
+
 
 
 // error handling
